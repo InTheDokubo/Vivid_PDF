@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Vivid PDF</title>
+    
+    <!-- iOS Web App (PWA) 設定 -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Vivid PDF">
+    <meta name="theme-color" content="#1a1a1a">
+
+    <!-- アプリアイコン (Base64埋め込み: ピンク背景に白文字) -->
+    <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJAAAACQCAYAAADnRuK4AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAEsklEQVR4nO3dS2hcVRzH8f+582gmbV5pS0s1Wl+0GkR8xK3iQkR0I7gRQVwIblwIbnQjuBABF10IuBDcgqAgrtSNC10UF1ZzkZq0Fq1W05qk85g7946LmWCaTjJz7535/T6wCDP33Jzf/CYzc+eec6SUCAAAAAAAAAAAAAAAALxWl9QBa7U6l1I62+12p5I6FAa1Wq25EML8/Py8p45C/yQJ0EytVjsTQphN6lAYlCTJbLfbPez7fk8dhf5JEqB6CGFXUofCoCRJ6t1u97D3/Y46Cv2TJEAhqUNh0FytVjtDCKmpQ9E/SQJUS+pQGJTneT3f9w+HEHrqKPRPkgA1kzoUBhVFMdvtdg/5vt9VR6F/kgRI6lB4lOd5Pd/3D4cQuuoo9E+SAM20Wq13fN8/m9ShMCiO49lut3vY9/2OOgr9kyRAIaT/F0hJkhwOIfTUQeifJAGSOhQeFcWf/093u93Dvu931FHonyQBkjoUHhVCOP/fJEnq3W73sPf9jjoK/ZMkQNLT0P/iOJ7t9XqHfd/vqKPQP0kCJD0N/S+Konq32z3sfb+jjkL/JAmQ9DT0vziOZ3u93mHf9zvqKPRPkgBJT0P/i6Ko3u12D3vf76ij0D9JAiQ9Df0vjuPZXq932Pf9jjoK/ZMkQJL0NPS/KIre7na7h33f76ij0D9JAiRJekr9L47j2V6vd9j3/Y46Cv2TJECS9JT6XxRFb3e73cO+73fUUeifJAGSpKfU/+I4nu31eod93++oo9A/SQIkSU+p/0VR9Ha32z3s+35HHYX+SRIgSXpK/S+O49ler3fY9/2OOgr9kyRAkvSU+l8URW93u93Dvu931FHonyQBkqSn1P/iOJ7t9XqHfd/vqKPQP0kCJD0N/S+Kona32z3sfb+jjkL/JAmQ9DT0vziOZ3u93mHf9zvqKPRPkgBJT0P/i6KobrfbPex9v6OOQv8kCZD0NPS/OI5ne73eYd/3O+oo9E+SAElPQ/+Loujtbqd/2Pt+Rx2F/kkSIOlp6H9xHM/2er3Dvu931FHonyQBkjoUHhVF0dvdT/+w7/sddRT6J0mApA6FR8VxPNvr9Q77vt9RR6F/kgRI6lB4VBRFb3fT/rDv+x11FPonSYCkDoVHxXE82+v1Dvu+31FHoX+SBEjqUHhUFEVvd9P0sPf9jjoK/ZMkQFKHwqPiOJ7t9XqHfd/vqKPQP0kCJHUoPCqKore7aXrY+35HHYX+SRIgqUPhUXEcz/Z6vcO+73fUUeifJAGSOhQeFUXR2900Pex9v6OOQv8kCZD0f/88P47j2V6vd9j3/Y46Cv2TJEBSh8Kjoih6u5umh73vd9RR6J8kAZI6FB4Vx/Fsr9c77Pt+Rx2F/kkSIKlD4VFRFL3dTdPD3vc76ij0T5IASR0Kj4rjeLbX6x32fb+jjkL/JAmQ1KHwqCiK3u6m6WHv+x11FPonSYCkDoVHxXE82+v1Dvu+31FHoX+SBEjqUHhUFEVvd9P0sPf9jjoK/ZMkQFKHwqPiOJ7t9XqHfd/vqKPQP0kCJHUoPCqKore7aXrY+35HHYX+SRIgAAAAAAAAAAAAAAAAvNYf4y1M0/7v6wwAAAAASUVORK5CYII=">
+
+    <!-- 必要なライブラリの読み込み -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        vivid: {
+                            400: '#ff4da6',
+                            500: '#ff0080',
+                            600: '#d6006b',
+                            900: '#1a1a1a',
+                            800: '#2d2d2d',
+                        }
+                    },
+                    padding: {
+                        'safe': 'env(safe-area-inset-top)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", sans-serif;
+            /* iOSのバウンススクロール禁止（アプリっぽくする） */
+            overscroll-behavior-y: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .safe-area-padding {
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        .drop-zone {
+            transition: all 0.3s ease;
+            border: 2px dashed #444;
+        }
+        .drop-zone:active, .drop-zone.active {
+            border-color: #ff0080;
+            background-color: rgba(255, 0, 128, 0.1);
+            transform: scale(0.98);
+        }
+        /* スクロールバー非表示（iOSライク） */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .preview-img {
+            object-fit: cover;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col bg-black safe-area-padding">
+
+    <!-- ヘッダー -->
+    <header class="bg-vivid-900/90 backdrop-blur-md p-4 pt-6 flex items-center justify-between border-b border-gray-800 sticky top-0 z-50">
+        <div class="flex items-center gap-3">
+            <div class="bg-vivid-500 p-1.5 rounded-lg">
+                <i data-lucide="file-image" class="text-white w-5 h-5"></i>
+            </div>
+            <h1 class="text-xl font-bold tracking-wider text-white">
+                VIVID <span class="text-vivid-500">PDF</span>
+            </h1>
+        </div>
+        <div class="text-[10px] text-gray-500 font-mono bg-gray-900 px-2 py-1 rounded">
+            HQ MODE
+        </div>
+    </header>
+
+    <main class="flex-1 flex flex-col p-4 space-y-6 overflow-y-auto hide-scrollbar">
+        
+        <!-- ドラッグ＆ドロップエリア -->
+        <div id="dropZone" class="drop-zone w-full h-40 rounded-2xl flex flex-col items-center justify-center cursor-pointer bg-gray-900 active:bg-gray-800">
+            <input type="file" id="fileInput" class="hidden" multiple accept="image/png, image/jpeg, image/jpg, image/webp">
+            <div class="text-center space-y-2 pointer-events-none">
+                <i data-lucide="plus-circle" class="text-vivid-500 w-10 h-10 mx-auto"></i>
+                <p class="text-gray-300 font-bold text-sm">画像をタップして選択</p>
+                <p class="text-[10px] text-gray-500">JPG, PNG, WEBP 対応</p>
+            </div>
+        </div>
+
+        <!-- プレビューエリア -->
+        <div id="previewContainer" class="hidden flex-1 flex flex-col">
+            <div class="flex justify-between items-end mb-3 pb-2 border-b border-gray-800">
+                <h2 class="text-sm font-semibold text-vivid-400">変換リスト <span id="countBadge" class="ml-2 text-[10px] bg-gray-800 text-gray-300 px-2 py-0.5 rounded-full">0</span></h2>
+                <button onclick="clearAll()" class="text-xs text-red-400 hover:text-red-300 flex items-center gap-1 transition p-2 -mr-2">
+                    <i data-lucide="trash-2" class="w-3 h-3"></i> リセット
+                </button>
+            </div>
+            
+            <!-- グリッドリスト -->
+            <div id="imageList" class="grid grid-cols-3 gap-3 pb-20">
+                <!-- JSで画像を挿入 -->
+            </div>
+        </div>
+    </main>
+
+    <!-- アクションボタンエリア (固定フッター) -->
+    <div id="actionArea" class="hidden fixed bottom-0 left-0 right-0 p-4 bg-black/80 backdrop-blur-xl border-t border-gray-800 safe-area-padding z-50">
+        <div class="flex flex-col gap-3 max-w-4xl mx-auto">
+            
+            <!-- ステータス表示 -->
+            <div id="statusMessage" class="hidden text-center text-xs font-mono text-vivid-400 animate-pulse mb-1">
+                処理中...
+            </div>
+
+            <div class="flex gap-3">
+                <!-- オプション1: まとめてPDF -->
+                <button onclick="convertMerged()" class="flex-1 bg-vivid-600 active:bg-vivid-500 text-white font-bold py-3.5 px-4 rounded-xl transition-all shadow-lg shadow-vivid-900/50 text-sm flex items-center justify-center gap-2">
+                    <i data-lucide="files" class="w-4 h-4"></i>
+                    <span>結合PDF</span>
+                </button>
+
+                <!-- オプション2: 個別PDF (ZIP) -->
+                <button onclick="convertIndividual()" class="flex-1 bg-gray-800 active:bg-gray-700 text-gray-200 font-bold py-3.5 px-4 rounded-xl transition-all border border-gray-700 text-sm flex items-center justify-center gap-2">
+                    <i data-lucide="folder-archive" class="w-4 h-4 text-vivid-400"></i>
+                    <span>個別ZIP</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // アイコンの初期化
+        lucide.createIcons();
+
+        // 状態管理
+        let uploadedFiles = [];
+        const { jsPDF } = window.jspdf;
+
+        // DOM要素
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const imageList = document.getElementById('imageList');
+        const previewContainer = document.getElementById('previewContainer');
+        const actionArea = document.getElementById('actionArea');
+        const countBadge = document.getElementById('countBadge');
+        const statusMessage = document.getElementById('statusMessage');
+
+        // イベント設定
+        dropZone.addEventListener('click', () => fileInput.click());
+        
+        // ドラッグイベント (PCでのテスト用 & iPad対応)
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('active'); });
+        dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('active'); });
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('active');
+            handleFiles(e.dataTransfer.files);
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+            fileInput.value = '';
+        });
+
+        // ファイル処理
+        function handleFiles(files) {
+            const validFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
+            if (validFiles.length === 0) return;
+
+            validFiles.forEach(file => {
+                uploadedFiles.push(file);
+                addImagePreview(file, uploadedFiles.length - 1);
+            });
+            updateUI();
+        }
+
+        // プレビュー表示
+        function addImagePreview(file, index) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const div = document.createElement('div');
+                div.className = 'relative aspect-square bg-gray-800 rounded-xl overflow-hidden border border-gray-700 shadow-sm';
+                div.innerHTML = `
+                    <img src="${e.target.result}" class="preview-img">
+                    <button onclick="removeFile(${index})" class="absolute top-1 right-1 bg-black/50 backdrop-blur text-white p-1.5 rounded-full hover:bg-red-500 transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                    </button>
+                `;
+                imageList.appendChild(div);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        window.removeFile = (index) => {
+            uploadedFiles.splice(index, 1);
+            refreshPreview();
+        };
+
+        window.clearAll = () => {
+            uploadedFiles = [];
+            refreshPreview();
+        };
+
+        function refreshPreview() {
+            imageList.innerHTML = '';
+            uploadedFiles.forEach((file, idx) => addImagePreview(file, idx));
+            updateUI();
+        }
+
+        function updateUI() {
+            countBadge.innerText = uploadedFiles.length;
+            if (uploadedFiles.length > 0) {
+                previewContainer.classList.remove('hidden');
+                actionArea.classList.remove('hidden');
+                // iOSでキーボードなどが被らないように下部に余白を追加
+                imageList.style.paddingBottom = '120px';
+            } else {
+                previewContainer.classList.add('hidden');
+                actionArea.classList.add('hidden');
+            }
+        }
+
+        function setStatus(msg) {
+            statusMessage.innerText = msg;
+            statusMessage.style.display = msg ? 'block' : 'none';
+        }
+
+        // 画像ロード
+        function loadImage(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.src = e.target.result;
+                    img.onload = () => resolve({ data: e.target.result, width: img.width, height: img.height, name: file.name });
+                    img.onerror = reject;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // PDF生成ロジック
+        function addImageToPdf(pdf, imgData, imgWidth, imgHeight) {
+            const pageWidth = pdf.internal.pageSize.getWidth();
+            const pageHeight = pdf.internal.pageSize.getHeight();
+            const margin = 10;
+            const maxWidth = pageWidth - (margin * 2);
+            const maxHeight = pageHeight - (margin * 2);
+            const ratio = Math.min(maxWidth / imgWidth, maxHeight / imgHeight);
+            const newWidth = imgWidth * ratio;
+            const newHeight = imgHeight * ratio;
+            const x = (pageWidth - newWidth) / 2;
+            const y = (pageHeight - newHeight) / 2;
+            pdf.addImage(imgData, 'JPEG', x, y, newWidth, newHeight);
+        }
+
+        async function convertMerged() {
+            if (uploadedFiles.length === 0) return;
+            setStatus('PDFを作成中...');
+            // UI反映のために少し待機
+            await new Promise(r => setTimeout(r, 50));
+            
+            try {
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                for (let i = 0; i < uploadedFiles.length; i++) {
+                    if (i > 0) pdf.addPage();
+                    const img = await loadImage(uploadedFiles[i]);
+                    addImageToPdf(pdf, img.data, img.width, img.height);
+                }
+                pdf.save('merged_images.pdf');
+                setStatus('');
+            } catch (err) {
+                alert('エラー: ' + err.message);
+                setStatus('');
+            }
+        }
+
+        async function convertIndividual() {
+            if (uploadedFiles.length === 0) return;
+            setStatus('ZIPを作成中...');
+            await new Promise(r => setTimeout(r, 50));
+
+            try {
+                const zip = new JSZip();
+                for (let i = 0; i < uploadedFiles.length; i++) {
+                    const pdf = new jsPDF('p', 'mm', 'a4');
+                    const img = await loadImage(uploadedFiles[i]);
+                    addImageToPdf(pdf, img.data, img.width, img.height);
+                    
+                    const fileName = img.name.replace(/\.[^/.]+$/, "") + ".pdf";
+                    zip.file(fileName, pdf.output('blob'));
+                }
+                const content = await zip.generateAsync({type: "blob"});
+                saveAs(content, "individual_pdfs.zip");
+                setStatus('');
+            } catch (err) {
+                alert('エラー: ' + err.message);
+                setStatus('');
+            }
+        }
+    </script>
+</body>
+</html>
